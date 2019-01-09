@@ -59,7 +59,6 @@ import Graphics.X11.Xlib.Extras (getWindowAttributes, WindowAttributes, Event)
 import Data.Typeable
 import Data.List ((\\))
 import Data.Maybe (isJust,fromMaybe)
-import Data.Monoid hiding ((<>))
 import System.Environment (lookupEnv)
 
 import qualified Data.Map as M
@@ -553,13 +552,13 @@ getXDGDirectory :: XDGDirectory -> FilePath -> IO FilePath
 getXDGDirectory xdgDir suffix =
   normalise . (</> suffix) <$>
   case xdgDir of
-    XDGData   -> get "XDG_DATA_HOME"   ".local/share"
-    XDGConfig -> get "XDG_CONFIG_HOME" ".config"
-    XDGCache  -> get "XDG_CACHE_HOME"  ".cache"
+    XDGData   -> getDir "XDG_DATA_HOME"   ".local/share"
+    XDGConfig -> getDir "XDG_CONFIG_HOME" ".config"
+    XDGCache  -> getDir "XDG_CACHE_HOME"  ".cache"
   where
-    get name fallback = do
-      env <- lookupEnv name
-      case env of
+    getDir name fallback = do
+      dir <- lookupEnv name
+      case dir of
         Nothing -> fallback'
         Just path
           | isRelative path -> fallback'
