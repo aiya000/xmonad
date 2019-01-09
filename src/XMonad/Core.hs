@@ -34,12 +34,13 @@ module XMonad.Core (
 import XMonad.StackSet hiding (modify)
 
 import Prelude
-import Control.Exception.Extensible (fromException, try, bracket, throw, finally, SomeException(..))
+import Control.Exception.Extensible (fromException, try, bracket, throw, finally, SomeException(..), IOException)
 import qualified Control.Exception.Extensible as E
 import Control.Applicative(Applicative, pure, (<$>), (<*>))
 import Control.Monad.Fail
 import Control.Monad.State
 import Control.Monad.Reader
+import Control.Monad.Except
 import Data.Semigroup
 import Data.Default
 import System.FilePath
@@ -148,7 +149,7 @@ data ScreenDetail   = SD { screenRect :: !Rectangle } deriving (Eq,Show, Read)
 -- instantiated on 'XConf' and 'XState' automatically.
 --
 newtype X a = X (ReaderT XConf (StateT XState IO) a)
-    deriving (Functor, Monad, MonadFail, MonadIO, MonadState XState, MonadReader XConf, Typeable)
+    deriving (Functor, Monad, MonadFail, MonadIO, MonadState XState, MonadReader XConf, MonadError IOException, Typeable)
 
 instance Applicative X where
   pure = return
